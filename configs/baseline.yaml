@@ -1,0 +1,49 @@
+# Baseline (B0) config. Paper: Shin et al. 2025.
+# Every value here is either from the paper (SOURCE: paper ...) or assumed
+# because the paper doesn't specify it (SOURCE: assumed (not in paper)).
+# Do not hardcode these in code -- read them from here.
+
+track:
+  name: T_oval             # SOURCE: assumed (not in paper)
+  lane_gap: 1.8             # m. Eq. 8 `l`. SOURCE: assumed (not in paper)
+
+vehicle:
+  wheelbase: 1.0            # m. Eq. 1/4 `L`. SOURCE: assumed (not in paper)
+  v_max_kmh: 20.0           # SOURCE: paper Sec 2.2 (platform max speed)
+  steer_max_rad: 0.5        # SOURCE: assumed (not in paper)
+  accel_max: 1.5            # m/s^2. SOURCE: assumed (not in paper)
+  decel_max: -3.0           # m/s^2. SOURCE: assumed (not in paper)
+  steer_rate_max: 1.0       # rad/s. SOURCE: assumed (not in paper)
+  sim_dt: 0.025             # s. SOURCE: assumed (40 Hz planning, finer integration)
+
+planner:
+  plan_dt: 0.2              # s. SOURCE: paper Sec 2.2 (dt)
+  horizon_steps: 12         # N. SOURCE: paper Sec 2.2
+  terminal_time: 2.4        # s. t_e = N*dt. SOURCE: assumed (not in paper)
+  terminal_speeds_kmh: [20, 15, 12, 10]   # SOURCE: paper Sec 2.2
+  n_lanes: 2                # SOURCE: paper Sec 2.2
+  d_collision: 1.2          # m. SOURCE: assumed (not in paper)
+
+cost:
+  weights:
+    offset: 0.7              # SOURCE: paper Sec 4.2
+    safety: 0.2              # SOURCE: paper Sec 4.2
+    speed: 0.2                # SOURCE: paper Sec 4.2
+  safety_radius: 1.5          # m. Eq. 9 `r`. SOURCE: assumed (not in paper)
+  time_decay: true             # Eq. 9 (1-(i/N)^2) term. SOURCE: paper Eq. 9
+  multi_opponent_mode: sum     # SOURCE: assumed (not in paper)
+  safety_mode: fixed           # B0. dispatch key for cost_safety's mode
+  clearance_floor: 0.1          # m. epsilon. SOURCE: assumed (not in paper)
+  kappa: 0.0                    # inflation gain. unused when safety_mode=fixed
+
+control:
+  kanayama:
+    k_x: 1.0                  # SOURCE: assumed (not in paper)
+    k_y: 2.0                  # SOURCE: assumed (not in paper)
+    k_theta: 2.0               # SOURCE: assumed (not in paper)
+
+tracking:
+  Q_diag: [0.05, 0.05, 0.02, 0.3, 0.05]   # [x,y,theta,v,delta] std devs squared below
+  R_diag: [0.05, 0.05, 0.05]               # [x,y,theta] std devs squared below
+  # NOTE: Q_diag/R_diag above are std devs; code squares them to build the diagonal.
+  # SOURCE: assumed (not in paper). Must be recalibrated via NEES before trusting P downstream.
